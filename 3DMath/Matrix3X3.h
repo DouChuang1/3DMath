@@ -7,6 +7,8 @@ public:
 	float m11, m12, m13;
 	float m21, m22, m23;
 	float m31, m32, m33;
+
+	void SetRotate(int x, float theta);
 };
 
 Matrix3X3 operator*(const Matrix3X3 &m1, const Matrix3X3 &m2);
