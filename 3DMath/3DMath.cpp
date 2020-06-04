@@ -32,25 +32,24 @@ void print_m(Matrix3X3 &m)
 
 int main()
 {
-	cout << "Hello Matrix Rotate!\n";
+	cout << "Hello Matrix Scale Pro!\n";
 
-	Vector3 v(10, 0, 0);
+	Vector3 v(1,2,3);
 	Matrix3X3 m;
-	m.SetRotate(3, PiOver2);
-	Vector3 r;
-	r = v * m;
+	m.SetScale(Vector3(2, 3, 4));
+
+	Vector3 r = v * m;
 	print_v(r);
 
-	m.SetRotate(2, PiOver2);
-	Vector3 w;
-	w = v * m;
-	print_v(w);
+	m.SetReflect(1);
 
-	m.SetRotate(1, PiOver2);
-	Vector3 z;
-	z = v * m;
-	print_v(z);
+	Vector3 g(0, 1, 0);
+	m.SetReflect(g);
+	r = v * m;
 
+	m.SetShear(1, 2, 3);
+	r = v * m;
+	print_v(r);
 	system("pause");
 	return 0;
 }

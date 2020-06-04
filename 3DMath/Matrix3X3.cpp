@@ -2,6 +2,7 @@
 #include "Matrix3X3.h"
 #include "Vector3.h"
 #include "MathUtil.h"
+#include <assert.h>
 
 Matrix3X3 operator*(const Matrix3X3 &m1, const Matrix3X3 &m2)
 {
@@ -46,6 +47,93 @@ void Matrix3X3::SetRotate(int x, float theta)
 		m11 = c; m12 = s; m13 = 0;
 		m21 = -s; m22 = c; m23 = 0;
 		m31 = 0; m32 = 0; m33 = 1;
+		break;
+	default:
+		break;
+	}
+}
+
+//缩放矩阵
+void Matrix3X3::SetScale(const Vector3 &v)
+{
+	m11 = v.x; m12 = 0; m13 = 0;
+	m21 = 0; m22 = v.y; m23 = 0;
+	m31 = 0; m32 = 0; m33 = v.z;
+}
+
+//投影矩阵 v传入单位向量 
+void Matrix3X3::SetProject(const Vector3 &v)
+{
+	m11 = 1.0f - v.x*v.x;
+	m22 = 1.0f - v.y*v.y;
+	m33 = 1.0f - v.z*v.z;
+
+	m12 = m21 = -v.x*v.y;
+	m13 = m31 = -v.x*v.z;
+	m23 = m32 = -v.y*v.z;
+}
+
+//1,2,3代表 x y z镜像
+void Matrix3X3::SetReflect(int x)
+{
+	switch (x)
+	{
+	case 1:
+		m11 = -1; m12 = 0; m13 = 0;
+		m21 = 0; m22 = 1; m23 = 0;
+		m31 = 0; m32 = 0; m33 = 1;
+		break;
+	case 2:
+		m11 = 1; m12 = 0; m13 = 0;
+		m21 = 0; m22 = -1; m23 = 0;
+		m31 = 0; m32 = 0; m33 = 1;
+		break;
+	case 3:
+		m11 = 1; m12 = 0; m13 = 0;
+		m21 = 0; m22 = 1; m23 = 0;
+		m31 = 0; m32 = 0; m33 = -1;
+		break;
+	default:
+		break;
+	}
+}
+
+void Matrix3X3::SetReflect( Vector3 &n)
+{
+	assert(fabs(n*n) - 1.0f < 0.01f);
+
+	float ax = -2.0f*n.x;
+	float ay = -2.0f*n.y;
+	float az = -2.0f*n.z;
+
+	m11 = 1.0f + ax * n.x;
+	m22 = 1.0f + ay * n.y;
+	m33 = 1.0f + az * n.z;
+
+	m12 = m21 = ax * n.y;
+	m13 = m31 = ax * n.z;
+	m23 = m32 = ay * n.z;
+}
+
+//1，2，3代表用x，y，z轴切变
+void Matrix3X3::SetShear(int x,float s,float t)
+{
+	switch (x)
+	{
+	case 1:
+		m11 = 1; m12 = s; m13 = t;
+		m21 = 0; m22 = 1; m23 = 0;
+		m31 = 0; m32 = 0; m33 = 1;
+		break;
+	case 2:
+		m11 = 1; m12 = 0; m13 = 0;
+		m21 = s; m22 = 1; m23 = t;
+		m31 = 0; m32 = 0; m33 = 1;
+		break;
+	case 3:
+		m11 = 1; m12 = 0; m13 = 0;
+		m21 = 0; m22 = 1; m23 = 0;
+		m31 = s; m32 = t; m33 = 1;
 		break;
 	default:
 		break;
