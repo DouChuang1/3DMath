@@ -32,24 +32,22 @@ void print_m(Matrix3X3 &m)
 
 int main()
 {
-	cout << "Hello Matrix Scale Pro!\n";
+	cout << "Hello Matrix 行列式!\n";
 
-	Vector3 v(1,2,3);
+	
 	Matrix3X3 m;
-	m.SetScale(Vector3(2, 3, 4));
+	m.m11 = -4; m.m12 = -3; m.m13 = 3;
+	m.m21 = 0; m.m22 = 2; m.m23 = -2;
+	m.m31 = 1; m.m32 = 4; m.m33 = -1;
 
-	Vector3 r = v * m;
-	print_v(r);
+	float detM = Determinant(m);
 
-	m.SetReflect(1);
+	
+	cout << detM << endl;
 
-	Vector3 g(0, 1, 0);
-	m.SetReflect(g);
-	r = v * m;
-
-	m.SetShear(1, 2, 3);
-	r = v * m;
-	print_v(r);
+	Matrix3X3 r;
+	r = Inverse(m);
+	print_m(r);
 	system("pause");
 	return 0;
 }

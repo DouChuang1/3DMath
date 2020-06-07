@@ -139,3 +139,34 @@ void Matrix3X3::SetShear(int x,float s,float t)
 		break;
 	}
 }
+
+//行列式值的几何意义是 立方体体积
+float Determinant(const Matrix3X3 &m)
+{
+	return m.m11*m.m22*m.m33 + m.m12*m.m23*m.m31 + m.m21*m.m32*m.m13 - m.m13*m.m22*m.m31 - m.m21*m.m12*m.m33 - m.m23*m.m32*m.m11;
+}
+
+//矩阵的逆
+Matrix3X3 Inverse(const Matrix3X3 &m)
+{
+	float det = Determinant(m);
+	assert(fabs(det) > 0.00001f); 
+
+	float oneOverDet = 1 / det;
+
+	Matrix3X3 r;
+
+	r.m11 = (m.m22*m.m33 - m.m23*m.m32)*oneOverDet;
+	r.m12 = (m.m32*m.m13 - m.m12*m.m33)*oneOverDet;  
+	r.m13 = (m.m12*m.m23 - m.m13*m.m22)*oneOverDet;
+
+	r.m21 = (m.m31*m.m23 - m.m33*m.m21)*oneOverDet;
+	r.m22 = (m.m11*m.m33 - m.m31*m.m13)*oneOverDet;
+	r.m23 = (m.m21*m.m13 - m.m11*m.m23)*oneOverDet;
+
+	r.m31 = (m.m21*m.m32 - m.m31*m.m22)*oneOverDet;
+	r.m32 = (m.m31*m.m12 - m.m11*m.m32)*oneOverDet;
+	r.m33 = (m.m11*m.m22 - m.m12*m.m21)*oneOverDet;
+
+	return r;
+}

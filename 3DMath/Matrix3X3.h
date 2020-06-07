@@ -20,3 +20,6 @@ Matrix3X3 operator*(const Matrix3X3 &m1, const Matrix3X3 &m2);
 
 Vector3 operator*(const Vector3 &v, const Matrix3X3 &m);
 
+float Determinant(const Matrix3X3 &m);
+
+Matrix3X3 Inverse(const Matrix3X3 &m);
