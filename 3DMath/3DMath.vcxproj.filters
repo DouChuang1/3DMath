@@ -21,10 +21,10 @@
     <ClInclude Include="Vector3.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Matrix3X3.h">
+    <ClInclude Include="MathUtil.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MathUtil.h">
+    <ClInclude Include="Matrix4X3.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

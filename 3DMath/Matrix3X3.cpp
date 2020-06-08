@@ -1,12 +1,12 @@
 #include "pch.h"
-#include "Matrix3X3.h"
+#include "Matrix4X3.h"
 #include "Vector3.h"
 #include "MathUtil.h"
 #include <assert.h>
 
-Matrix3X3 operator*(const Matrix3X3 &m1, const Matrix3X3 &m2)
+Matrix4X3 operator*(const Matrix4X3 &m1, const Matrix4X3 &m2)
 {
-	Matrix3X3 r;
+	Matrix4X3 r;
 	r.m11 = m1.m11*m2.m11 + m1.m12*m2.m21 + m1.m13*m2.m31;
 	r.m12 = m1.m11*m2.m12 + m1.m12*m2.m22 + m1.m13*m2.m32;
 	r.m13 = m1.m11*m2.m13 + m1.m12*m2.m23 + m1.m13*m2.m33;
@@ -18,16 +18,20 @@ Matrix3X3 operator*(const Matrix3X3 &m1, const Matrix3X3 &m2)
 	r.m31 = m1.m31*m2.m11 + m1.m32*m2.m21 + m1.m33*m2.m31;
 	r.m32 = m1.m31*m2.m12 + m1.m32*m2.m22 + m1.m33*m2.m32;
 	r.m33 = m1.m31*m2.m13 + m1.m32*m2.m23 + m1.m33*m2.m33;
+
+	r.tx = m1.tx*m2.m11 + m1.ty*m2.m21 + m1.tz*m2.m31 + m2.tx;
+	r.ty = m1.tx*m2.m12 + m1.ty*m2.m22 + m1.tz*m2.m32 + m2.ty;
+	r.tz = m1.tx*m2.m13 + m1.ty*m2.m23 + m1.tz*m2.m33 + m2.tz;
 	return r;
 }
 
-Vector3 operator*(const Vector3 &v, const Matrix3X3 &m)
+Vector3 operator*(const Vector3 &v, const Matrix4X3 &m)
 {
 	return  Vector3(v.x*m.m11 + v.y*m.m21 + v.z*m.m31, v.x*m.m12 + v.y*m.m22 + v.z*m.m32, v.x*m.m13 + v.y*m.m23 + v.z*m.m33);
 }
 
 //1,2,3代表 x y z旋转
-void Matrix3X3::SetRotate(int x, float theta)
+void Matrix4X3::SetRotate(int x, float theta)
 {
 	float s, c;
 	SinCos(&s, &c, theta);
@@ -51,18 +55,20 @@ void Matrix3X3::SetRotate(int x, float theta)
 	default:
 		break;
 	}
+	tx = ty = tz = 0;
 }
 
 //缩放矩阵
-void Matrix3X3::SetScale(const Vector3 &v)
+void Matrix4X3::SetScale(const Vector3 &v)
 {
 	m11 = v.x; m12 = 0; m13 = 0;
 	m21 = 0; m22 = v.y; m23 = 0;
 	m31 = 0; m32 = 0; m33 = v.z;
+	tx = ty = tz = 0;
 }
 
 //投影矩阵 v传入单位向量 
-void Matrix3X3::SetProject(const Vector3 &v)
+void Matrix4X3::SetProject(const Vector3 &v)
 {
 	m11 = 1.0f - v.x*v.x;
 	m22 = 1.0f - v.y*v.y;
@@ -71,10 +77,12 @@ void Matrix3X3::SetProject(const Vector3 &v)
 	m12 = m21 = -v.x*v.y;
 	m13 = m31 = -v.x*v.z;
 	m23 = m32 = -v.y*v.z;
+
+	tx = ty = tz = 0;
 }
 
 //1,2,3代表 x y z镜像
-void Matrix3X3::SetReflect(int x)
+void Matrix4X3::SetReflect(int x,float k)
 {
 	switch (x)
 	{
@@ -82,23 +90,29 @@ void Matrix3X3::SetReflect(int x)
 		m11 = -1; m12 = 0; m13 = 0;
 		m21 = 0; m22 = 1; m23 = 0;
 		m31 = 0; m32 = 0; m33 = 1;
+		tx = 2 * k;
+		ty = tz = 0;
 		break;
 	case 2:
 		m11 = 1; m12 = 0; m13 = 0;
 		m21 = 0; m22 = -1; m23 = 0;
 		m31 = 0; m32 = 0; m33 = 1;
+		tx = tz = 0;
+		ty = 2 * k;
 		break;
 	case 3:
 		m11 = 1; m12 = 0; m13 = 0;
 		m21 = 0; m22 = 1; m23 = 0;
 		m31 = 0; m32 = 0; m33 = -1;
+		tz = 2 * k;
+		tx = ty = 0;
 		break;
 	default:
 		break;
 	}
 }
 
-void Matrix3X3::SetReflect( Vector3 &n)
+void Matrix4X3::SetReflect( Vector3 &n)
 {
 	assert(fabs(n*n) - 1.0f < 0.01f);
 
@@ -113,10 +127,12 @@ void Matrix3X3::SetReflect( Vector3 &n)
 	m12 = m21 = ax * n.y;
 	m13 = m31 = ax * n.z;
 	m23 = m32 = ay * n.z;
+
+	tx = ty = tz = 0;
 }
 
 //1，2，3代表用x，y，z轴切变
-void Matrix3X3::SetShear(int x,float s,float t)
+void Matrix4X3::SetShear(int x,float s,float t)
 {
 	switch (x)
 	{
@@ -138,23 +154,24 @@ void Matrix3X3::SetShear(int x,float s,float t)
 	default:
 		break;
 	}
+	tx = ty = tz = 0.0f;
 }
 
 //行列式值的几何意义是 立方体体积
-float Determinant(const Matrix3X3 &m)
+float Determinant(const Matrix4X3 &m)
 {
 	return m.m11*m.m22*m.m33 + m.m12*m.m23*m.m31 + m.m21*m.m32*m.m13 - m.m13*m.m22*m.m31 - m.m21*m.m12*m.m33 - m.m23*m.m32*m.m11;
 }
 
 //矩阵的逆
-Matrix3X3 Inverse(const Matrix3X3 &m)
+Matrix4X3 Inverse(const Matrix4X3 &m)
 {
 	float det = Determinant(m);
 	assert(fabs(det) > 0.00001f); 
 
 	float oneOverDet = 1 / det;
 
-	Matrix3X3 r;
+	Matrix4X3 r;
 
 	r.m11 = (m.m22*m.m33 - m.m23*m.m32)*oneOverDet;
 	r.m12 = (m.m32*m.m13 - m.m12*m.m33)*oneOverDet;  
@@ -169,4 +186,31 @@ Matrix3X3 Inverse(const Matrix3X3 &m)
 	r.m33 = (m.m11*m.m22 - m.m12*m.m21)*oneOverDet;
 
 	return r;
+}
+
+void Matrix4X3::ZeroTranslation()
+{
+	tx = ty = tz = 0;
+}
+
+void Matrix4X3::SetTranslation(const Vector3 &v)
+{
+	tx = v.x;
+	ty = v.y;
+	tz = v.z;
+}
+
+void Matrix4X3::SetupTranslation(const Vector3 &v)
+{
+	m11 = 1; m12 = 0; m13 = 0;
+	m21 = 0; m22 = 1; m23 = 0;
+	m31 = 0; m32 = 0; m33 = 1;
+	tx = v.x;
+	ty = v.y;
+	tz = v.z;
+}
+
+Vector3 GetTranslation(const Matrix4X3 &m)
+{
+	return Vector3(m.tx, m.ty, m.tz);
 }

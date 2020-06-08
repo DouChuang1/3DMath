@@ -152,7 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="MathUtil.h" />
-    <ClInclude Include="Matrix3X3.h" />
+    <ClInclude Include="Matrix4X3.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
