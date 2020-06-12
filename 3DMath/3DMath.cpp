@@ -7,6 +7,7 @@
 #include "Matrix4X3.h"
 #include "MathUtil.h"
 #include <math.h>
+#include "RotationMatrix.h"
 using namespace std;
 
 float to_zero(float n)
@@ -32,22 +33,21 @@ void print_m(Matrix4X3 &m)
 
 int main()
 {
-	cout << "Hello Matrix 行列式!\n";
+	cout << "Hello Rotation Matrix !\n";
 
-	
-	Matrix4X3 m;
-	m.m11 = -4; m.m12 = -3; m.m13 = 3;
-	m.m21 = 0; m.m22 = 2; m.m23 = -2;
-	m.m31 = 1; m.m32 = 4; m.m33 = -1;
+	RotationMatrix rm;
+	rm.m11 = 0.866f; rm.m12 = 0; rm.m13 =-0.5f;
+	rm.m21 = 0.0f; rm.m22 = 1.0f; rm.m23 = 0.0f;
+	rm.m31 = 0.5f; rm.m32 = 0.0f; rm.m33 = 0.866f;
 
-	float detM = Determinant(m);
+	Vector3 v(10, 20, 30);
 
-	
-	cout << detM << endl;
+	Vector3 r;
 
-	Matrix4X3 r;
-	r = Inverse(m);
-	print_m(r);
+	r = rm.intertialToObject(v);
+	print_v(r);
+	r = rm.ObjectTointertial(r);
+	print_v(r);
 	system("pause");
 	return 0;
 }
