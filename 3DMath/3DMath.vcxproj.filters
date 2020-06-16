@@ -30,6 +30,9 @@
     <ClInclude Include="RotationMatrix.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="EulerAngles.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -45,6 +48,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="RotationMatrix.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="EulerAngles.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MathUtil.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

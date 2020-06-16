@@ -1,6 +1,6 @@
 #pragma once
 
-class Vector3;
+#include "Vector3.h"
 
 class Matrix4X3 {
 public:

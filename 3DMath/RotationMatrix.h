@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector3.h"
+class EulerAngles;
 
 class RotationMatrix
 {
@@ -13,4 +14,6 @@ public:
 	Vector3 intertialToObject(const Vector3 &v) const;
 
 	Vector3 ObjectTointertial(const Vector3 &v) const;
+
+	void Setup(const EulerAngles &orientation);
 };

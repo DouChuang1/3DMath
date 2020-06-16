@@ -8,6 +8,7 @@
 #include "MathUtil.h"
 #include <math.h>
 #include "RotationMatrix.h"
+#include "EulerAngles.h"
 using namespace std;
 
 float to_zero(float n)
@@ -46,8 +47,12 @@ int main()
 
 	r = rm.intertialToObject(v);
 	print_v(r);
-	r = rm.ObjectTointertial(r);
-	print_v(r);
+	RotationMatrix erm;
+	EulerAngles ea(30*PI/180,0,0);
+	erm.Setup(ea);
+	Vector3 er;
+	er = erm.intertialToObject(v);
+	print_v(er);
 	system("pause");
 	return 0;
 }
