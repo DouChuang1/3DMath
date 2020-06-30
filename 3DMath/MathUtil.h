@@ -9,6 +9,7 @@ const float k1Over2Pi = 1.0f / Pi2;
 const float k1OverPi = 1.0f / PI;
 
 extern float wrapPi(float theta);
+extern float safeAcos(float x);
 
 inline void SinCos(float *Sin, float *Cos, float theta)
 {
