@@ -14,6 +14,18 @@ public:
 
 	float getRotationAngle() const;
 	Vector3 getRotationAxis() const;
+
+	Quaternion operator *(const Quaternion &q) const;
+
+	Quaternion &operator *=(const Quaternion &q);
+
+	void normalize(); //规范化
 };
 
 extern const Quaternion kQuaternionIdentify;
+
+extern float dotProduct(const Quaternion &a, const Quaternion &b);
+
+extern Quaternion conjugate(const Quaternion &q); //共轭
+
+extern Quaternion pow(const Quaternion &q, float exp); //幂计算
