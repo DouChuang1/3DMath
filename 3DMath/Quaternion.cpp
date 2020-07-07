@@ -3,6 +3,8 @@
 #include <math.h>
 #include <assert.h>
 #include "MathUtil.h"
+#include "RotationMatrix.h"
+#include "EulerAngles.h"
 
 const Quaternion kQuaternionIdentify = { 1.0f,0.0f,0.0f,0.0f };
 
@@ -149,4 +151,106 @@ Quaternion pow(const Quaternion &q, float exp)
 	result.z = q.z*mult;
 
 	return result;
+}
+
+void Quaternion::fromRotationMatrix(const RotationMatrix &m)
+{
+	float m11 = m.m11;
+	float m12 = m.m12;
+	float m13 = m.m13;
+
+	float m21 = m.m21;
+	float m22 = m.m22;
+	float m23 = m.m23;
+
+	float m31 = m.m31;
+	float m32 = m.m32;
+	float m33 = m.m33;
+
+	//计算 四元数中 w x y z 谁最大 经验算法 哪一个大 然后用这个值用另外一组公式去计算其他三个数值
+	float fourWsqrtMinus1 = m11 + m22 + m33;
+	float fourXsqrtMinus1 = m11 - m22 - m33;
+	float fourYsqrtMinus1 = m22 - m11 - m33;
+	float fourZsqrtMinus1 = m33 - m11 - m22;
+
+	int biggest = fourWsqrtMinus1;
+	int index = 0;
+	if (fourXsqrtMinus1 > biggest)
+	{
+		biggest = fourXsqrtMinus1;
+		index = 1;
+	}
+	if (fourYsqrtMinus1 > biggest)
+	{
+		biggest = fourYsqrtMinus1;
+		index = 2;
+	}
+	if (fourZsqrtMinus1 > biggest)
+	{
+		biggest = fourZsqrtMinus1;
+		index = 3;
+	}
+	
+	float biggestVal = sqrt(biggest + 1.0f)*0.5f;
+	float mult = 0.25  / biggestVal;
+	switch (index)
+	{
+	case 0:
+		w = biggestVal;
+		x = (m23 - m32)*mult;
+		y = (m31 - m13)*mult;
+		z = (m12 - m21)*mult;
+		break;
+	case 1:
+		x = biggestVal;
+		w = (m23 - m32)*mult;
+		y = (m12 + m21)*mult;
+		z = (m31 + m13)*mult;
+		break;
+	case 2:
+		y = biggestVal;
+		w = (m31 - m13)*mult;
+		x = (m12 + m21)*mult;
+		z = (m23 + m32)*mult;
+		break;
+	case 3:
+		z = biggestVal;
+		w = (m12 - m21)*mult;
+		x = (m31 + m13)*mult;
+		y = (m23 + m32)*mult;
+		break;
+	default:
+		break;
+	}
+}
+
+void Quaternion::setToRatoteObjectToInertial(const EulerAngles &orientation)
+{
+	float sp, sb, sh;
+	float cp, cb, ch;
+
+	SinCos(&sp, &cp, orientation.pitch*0.5f);
+	SinCos(&sb, &cb, orientation.bank*0.5f);
+	SinCos(&sh, &ch, orientation.heading*0.5f);
+
+	w = ch * cp*cb + sh * sp*sb;
+	x = ch * sp*cb*+sh * cp*sb;
+	y = sh * cp*cb - ch * sp*sb;
+	z = ch * cp*sb - sh * sp*cb;
+}
+
+void Quaternion::setToRatoteInertialToObject(const EulerAngles &orientation)
+{
+	//上面的共轭
+	float sp, sb, sh;
+	float cp, cb, ch;
+
+	SinCos(&sp, &cp, orientation.pitch*0.5f);
+	SinCos(&sb, &cb, orientation.bank*0.5f);
+	SinCos(&sh, &ch, orientation.heading*0.5f);
+
+	w = ch * cp*cb + sh * sp*sb;
+	x = -ch * sp*cb*-sh * cp*sb;
+	y = -sh * cp*cb + ch * sp*sb;
+	z = -ch * cp*sb + sh * sp*cb;
 }

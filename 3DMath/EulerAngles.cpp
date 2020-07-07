@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "MathUtil.h"
 #include "EulerAngles.h"
+#include "Quaternion.h"
 
 void EulerAngles::FromObjectToWorldMatrix(const Matrix4X3 &m)
 {
@@ -83,4 +84,41 @@ void EulerAngles::canonize()
 		bank = wrapPi(bank);
 	}
 	heading = wrapPi(heading);
+}
+
+void EulerAngles::fromObjectToIneritialQuaternion(const Quaternion&q)
+{
+	float sp = -2.0f*(q.y*q.z - q.w*q.x);
+	//检查是否会发生万向锁
+	if (fabs(sp) > 0.99999f)
+	{
+		pitch = k1Over2Pi * sp;
+		heading = atan2(-q.x*q.z + q.w*q.y,0.5f-q.y*q.y-q.z*q.z);
+		bank = 0.0f;
+	}
+	else
+	{
+		pitch = asin(sp);
+		heading = atan2(q.x*q.z + q.w*q.y, 0.5f - q.x*q.x - q.y*q.y);
+		bank = atan2(q.x*q.y + q.w*q.z, 0.5 - q.x*q.x - q.z*q.z);
+	}
+}
+
+void EulerAngles::fromIneritialToObjectQuaternion(const Quaternion&q)
+{
+	//相反变换 四元数共轭 取xyz 相应的负数
+	float sp = -2.0f*(q.y*q.z + q.w*q.x);
+	//检查是否会发生万向锁
+	if (fabs(sp) > 0.99999f)
+	{
+		pitch = k1Over2Pi * sp;
+		heading = atan2(-q.x*q.z - q.w*q.y, 0.5f - q.y*q.y - q.z*q.z);
+		bank = 0.0f;
+	}
+	else
+	{
+		pitch = asin(sp);
+		heading = atan2(q.x*q.z - q.w*q.y, 0.5f - q.x*q.x - q.y*q.y);
+		bank = atan2(q.x*q.y -q.w*q.z, 0.5 - q.x*q.x - q.z*q.z);
+	}
 }

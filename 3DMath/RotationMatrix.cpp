@@ -3,6 +3,7 @@
 #include "RotationMatrix.h"
 #include "EulerAngles.h"
 #include "MathUtil.h"
+#include"Quaternion.h"
 
 void RotationMatrix::identify()
 {
@@ -39,4 +40,31 @@ void RotationMatrix::Setup(const EulerAngles &orientation)
 	m13 = sh * cp;
 	m23 = -sp;
 	m33 = ch * cp;
+}
+
+void RotationMatrix::fromInertialToObjectQuaternion(const Quaternion &q)
+{
+	m11 = 1.0f - 2.0f*q.y*q.y - 2.0f*q.z*q.z;
+	m12 = 2.0f * q.x*q.y + 2.0f * q.w*q.z;
+	m13 = 2.0f * q.x*q.z - 2.0f * q.w*q.y;
+	m21 = 2.0f * q.x*q.y - 2.0f * q.w*q.z;
+	m22 = 1.0f - 2.0f * q.x*q.x - 2.0f * q.z*q.z;
+	m23 = 2.0f * q.y*q.z + 2.0f * q.w*q.x;
+	m31 = 2.0f * q.x*q.z + 2.0f * q.w*q.y;
+	m32 = 2.0f * q.y*q.z - 2.0f * q.w*q.z;
+	m33 = 1.0f - 2.0f * q.x*q.x - 2.0f * q.y*q.y;
+}
+
+//Õý½»¾ØÕó Äæ=×ªÖÃ
+void RotationMatrix::fromObjectToInertialQuaternion(const Quaternion &q)
+{
+	m11 = 1.0f - 2.0f*q.y*q.y - 2.0f*q.z*q.z;
+	m21 = 2.0f * q.x*q.y + 2.0f * q.w*q.z;
+	m31 = 2.0f * q.x*q.z - 2.0f * q.w*q.y;
+	m12 = 2.0f * q.x*q.y - 2.0f * q.w*q.z;
+	m22 = 1.0f - 2.0f * q.x*q.x - 2.0f * q.z*q.z;
+	m32 = 2.0f * q.y*q.z + 2.0f * q.w*q.x;
+	m13 = 2.0f * q.x*q.z + 2.0f * q.w*q.y;
+	m23 = 2.0f * q.y*q.z - 2.0f * q.w*q.z;
+	m33 = 1.0f - 2.0f * q.x*q.x - 2.0f * q.y*q.y;
 }

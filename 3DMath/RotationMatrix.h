@@ -1,6 +1,8 @@
 #pragma once
 #include "Vector3.h"
+#include "Quaternion.h"
 class EulerAngles;
+class Quaternion;
 
 class RotationMatrix
 {
@@ -16,4 +18,6 @@ public:
 	Vector3 ObjectTointertial(const Vector3 &v) const;
 
 	void Setup(const EulerAngles &orientation);
+	void fromInertialToObjectQuaternion(const Quaternion &q);
+	void fromObjectToInertialQuaternion(const Quaternion &q);
 };

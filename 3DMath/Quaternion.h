@@ -1,5 +1,9 @@
 #pragma once
 #include "Vector3.h"
+
+class RotationMatrix;
+class EulerAngles;
+
 class Quaternion
 {
 public:
@@ -20,6 +24,12 @@ public:
 	Quaternion &operator *=(const Quaternion &q);
 
 	void normalize(); //规范化
+
+	void fromRotationMatrix(const RotationMatrix &m);
+
+	void setToRatoteObjectToInertial(const EulerAngles &orientation);  //欧拉角转四元数 物体坐标系到惯性坐标系
+
+	void setToRatoteInertialToObject(const EulerAngles &orientation); //欧拉角转四元数 惯性坐标系到物体坐标系
 };
 
 extern const Quaternion kQuaternionIdentify;

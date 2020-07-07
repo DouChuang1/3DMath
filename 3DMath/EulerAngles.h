@@ -1,7 +1,7 @@
 #pragma once
 #include "RotationMatrix.h"
 #include "Matrix4X3.h"
-
+class Quaternion;
 
 class EulerAngles
 {
@@ -19,4 +19,7 @@ public :
 	void FromRotationMatrix(const RotationMatrix &r);
 
 	void canonize(); // 三个角度限制 一定程度避免万向死锁问题
+
+	void fromObjectToIneritialQuaternion(const Quaternion&q);
+	void fromIneritialToObjectQuaternion(const Quaternion&q);
 };
