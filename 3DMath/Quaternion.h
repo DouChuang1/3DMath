@@ -39,3 +39,5 @@ extern float dotProduct(const Quaternion &a, const Quaternion &b);
 extern Quaternion conjugate(const Quaternion &q); //π≤ÈÓ
 
 extern Quaternion pow(const Quaternion &q, float exp); //√›º∆À„
+
+extern Quaternion slerp(const Quaternion &q1, const Quaternion &q2,float t); //≤Â÷µ 0<t<1

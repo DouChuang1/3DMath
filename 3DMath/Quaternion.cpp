@@ -254,3 +254,60 @@ void Quaternion::setToRatoteInertialToObject(const EulerAngles &orientation)
 	y = -sh * cp*cb + ch * sp*sb;
 	z = -ch * cp*sb + sh * sp*cb;
 }
+
+Quaternion slerp(const Quaternion &q0, const Quaternion &q1, float t)
+{
+	if (t <= 0)
+	{
+		return q0;
+	}
+	if (t >=1)
+	{
+		return q1;
+	}
+
+	//计算夹角Omega 点乘cos
+	float cosOmega = dotProduct(q0, q1);
+
+	//检查cosOmega 如果小于0 修改一个四元数为相反的 插值避免计算结果不一致
+
+	float q1w = q1.w;
+	float q1x = q1.x;
+	float q1y = q1.y;
+	float q1z = q1.z;
+
+	if (cosOmega < 0)
+	{
+		q1w = -q1w;
+		q1x = -q1x;
+		q1y = -q1y;
+		q1z = -q1z;
+		cosOmega = -cosOmega;
+	}
+	float k0;
+	float k1;
+	//计算k0 k1
+	//如果夹角足够小 可以使用线性插值
+	if (cosOmega > 0.99999f)
+	{
+		k0 = 1.0f - t;
+		k1 = t;
+	}
+	else
+	{
+		float sinOmega = sqrt(1 - cosOmega * cosOmega);
+		float omega = atan2(sinOmega, cosOmega);
+		float oneOverSinOmega = 1.0f / sinOmega;
+
+		k0 = sin((1.0f - t)*omega)*oneOverSinOmega;
+		k1 = sin(t*omega)*oneOverSinOmega;
+	}
+
+	Quaternion result;
+	result.w = k0 * q0.w + k1 * q1w;
+	result.x = k0 * q0.x + k1 * q1x;
+	result.y = k0 * q0.y + k1 * q1y;
+	result.z = k0 * q0.z + k1 * q1z;
+
+	return result;
+}
